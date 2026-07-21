@@ -103,13 +103,13 @@
 
         .organization-tag {
             color: #0099ff;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 800;
-            margin-bottom: 20px;
             background: rgba(0, 153, 255, 0.1);
             padding: 6px 16px;
             border-radius: 20px;
             border: 1px solid rgba(0, 153, 255, 0.3);
+            text-align: center;
         }
 
         .splash-content {
@@ -118,6 +118,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            margin-top: 15px;
             margin-bottom: 30px;
             animation: fadeIn 1.2s ease;
         }
@@ -201,7 +202,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            margin-bottom: 80px; 
+            margin-bottom: 30px; 
         }
 
         .header {
@@ -480,33 +481,6 @@
             cursor: pointer;
             width: 100%;
         }
-
-        .dev-controls {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            background: #e2e8f0;
-            padding: 10px 20px;
-            border-top: 2px solid #cbd5e1;
-            align-items: center;
-        }
-
-        .dev-btn {
-            background: #475569;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 800;
-            font-size: 16px;
-        }
-
-        .dev-title {
-            font-size: 12px;
-            font-weight: 800;
-            color: #475569;
-        }
     </style>
 </head>
 <body>
@@ -548,6 +522,8 @@
                 <div class="logo-image-container">
                     <img src="https://drive.google.com/thumbnail?id=1oJ6C_MQWPxYWUT93xOSo3_Hx9vFj5tJ-&sz=w1000" alt="אתגר 3" class="logo-img">
                 </div>
+                <!-- הקרדיט הקבוע של הארגון שמופיע בכל העמודים -->
+                <div class="organization-tag">מטעם 'מחברים לתורה' | בראשות הרב שמידט שליט"א</div>
                 <div class="app-subtitle">לוקחים אחריות על הזמן בחופש הגדול</div>
             </div>
 
@@ -581,13 +557,6 @@
                 <button class="share-button" onclick="shareWithFriend()">
                     <span>🚀</span> אתגר חבר! שלח לו קישור
                 </button>
-            </div>
-
-            <!-- סרגל חיצי ניווט מהיר - לפיתוח בלבד -->
-            <div class="dev-controls">
-                <button class="dev-btn" onclick="devPrev()">◀ קודם</button>
-                <span class="dev-title">שלב בדיקה</span>
-                <button class="dev-btn" onclick="devNext()">הבא ▶</button>
             </div>
         </div>
     </div>
@@ -675,9 +644,9 @@
             document.getElementById('celebrationBox').classList.remove('show');
         }
 
-        /* פונקציית שיתוף בטוחה */
+        /* פונקציית שיתוף בטוחה המשתמשת בכתובת האתר האמיתית ב-GitHub */
         function shareWithFriend() {
-            const shareUrl = window.location.protocol.startsWith('http') ? window.location.href : 'https://example.com/atgar3';
+            const shareUrl = window.location.protocol.startsWith('http') ? window.location.href : 'https://sidrbhe.github.io/-3/';
             const textToCopy = `אני משתתף באתגר 3 ומרוויח את הזמן בחופש! מציע גם לך להצטרף: ${shareUrl}`;
 
             if (window.location.protocol.startsWith('http') && navigator.share) {
@@ -695,7 +664,7 @@
                     document.execCommand('copy');
                     alert('הקישור וההודעה להזמנת חבר הועתקו ללוח בהצלחה!');
                 } catch (err) {
-                    alert('לא ניתן להעתיק אוטומטית. העתק את הקישור מכתובת בדפדפן.');
+                    alert('לא ניתן להעתיק אוטומטית. העתק את הקישור מכתובת הדפדפן.');
                 }
                 document.body.removeChild(tempInput);
             }
@@ -865,35 +834,6 @@
         function saveState() {
             localStorage.setItem('atgar3_currentDay', currentDayIndex);
             localStorage.setItem('atgar3_currentRound', currentRound);
-        }
-
-        function devNext() {
-            const step = challengeSteps[currentDayIndex];
-            if (currentRound < step.totalRounds - 1) {
-                currentRound++;
-            } else {
-                currentRound = 0;
-                currentDayIndex = (currentDayIndex + 1) % challengeSteps.length;
-                lastCompletionDate = ''; 
-                localStorage.removeItem('atgar3_lastCompletionDate');
-            }
-            if(isRunning) { clearInterval(timerInterval); isRunning = false; }
-            saveState();
-            updateUIDay();
-        }
-
-        function devPrev() {
-            if (currentRound > 0) {
-                currentRound--;
-            } else {
-                currentDayIndex = currentDayIndex === 0 ? challengeSteps.length - 1 : currentDayIndex - 1;
-                currentRound = challengeSteps[currentDayIndex].totalRounds - 1;
-                lastCompletionDate = '';
-                localStorage.removeItem('atgar3_lastCompletionDate');
-            }
-            if(isRunning) { clearInterval(timerInterval); isRunning = false; }
-            saveState();
-            updateUIDay();
         }
 
         updateUIDay();
