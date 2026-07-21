@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>אתגר 3 | לוקחים אחריות בחופש</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #1a2530; 
+            --accent-color: #ff6b35;  
+            --success-color: #2ed573; 
+            --logo-blue: #0099ff;    
+            --bg-color: #f5f7fa;
+            --text-color: #2c3e50;
+            --card-bg: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Assistant', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* קונפטי */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 10000;
+            overflow: hidden;
+            display: none;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: -20px;
+            opacity: 0.8;
+            animation: fall 3s linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(105vh) rotate(720deg);
+            }
+        }
+
+        /* מסך פתיחה */
+        #splashScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1a2530;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            transition: opacity 0.5s ease, visibility 0.5s;
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        .splash-logo-container {
+            max-width: 260px;
+            width: 100%;
+            margin-bottom: 15px;
+            animation: fadeIn 1s ease;
+        }
+
+        .splash-logo {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .organization-tag {
+            color: #0099ff;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: rgba(0, 153, 255, 0.1);
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 153, 255, 0.3);
+        }
+
+        .splash-content {
+            max-width: 340px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+            animation: fadeIn 1.2s ease;
+        }
+
+        .splash-description {
+            font-size: 26px;
+            font-weight: 900;
+            color: #ff9f43;
+            letter-spacing: 0.3px;
+        }
+
+        .splash-explanation {
+            font-size: 16px;
+            color: #e2e8f0;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .splash-prep-box {
+            background: rgba(255, 255, 255, 0.08);
+            border-right: 4px solid var(--accent-color);
+            padding: 12px 15px;
+            border-radius: 8px;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .splash-prep-title {
+            color: #ff6b35;
+            font-weight: 800;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .splash-prep-text {
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+
+        .splash-btn {
+            background: linear-gradient(135deg, var(--logo-blue), #007acc);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 20px;
+            font-weight: 800;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 153, 255, 0.4);
+            animation: pulse 2s infinite;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 8px 25px rgba(0, 153, 255, 0.4); }
+            50% { transform: scale(1.03); box-shadow: 0 12px 30px rgba(0, 153, 255, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 8px 25px rgba(0, 153, 255, 0.4); }
+        }
+
+        /* אפליקציה ראשית */
+        .app-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .phone-container {
+            width: 100%;
+            max-width: 380px;
+            background: var(--card-bg);
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 80px; 
+        }
+
+        .header {
+            padding: 25px 20px 20px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #243342, var(--primary-color));
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-image-container {
+            width: 100%;
+            max-width: 180px;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .app-subtitle {
+            font-size: 15px;
+            color: #ffffff;
+            font-weight: 800;
+            width: 100%;
+            padding: 6px 12px;
+            background: rgba(0, 153, 255, 0.15); 
+            border-radius: 10px;
+            border: 1px solid rgba(0, 153, 255, 0.25);
+        }
+
+        .content {
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; 
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 18px;
+            text-align: center;
+            width: 100%;
+            border: 1px solid #e9ecef;
+        }
+
+        .day-title {
+            font-size: 26px;
+            color: var(--primary-color);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 6px;
+        }
+
+        .requirement-text {
+            font-size: 16px;
+            color: #475569;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .time-setter-container {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .time-setter-main-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-color);
+        }
+
+        .rounds-inputs-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .round-input-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .round-input-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .round-input-status {
+            font-size: 12px;
+            font-weight: 800;
+            color: #94a3b8;
+        }
+
+        .round-input-status.active {
+            color: var(--accent-color);
+        }
+
+        .round-input-status.completed {
+            color: var(--success-color);
+        }
+
+        .time-input {
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid #ced4da;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-color);
+            outline: none;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .rounds-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .round-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #e9ecef;
+            border: 2px solid #dee2e6;
+        }
+
+        .round-dot.completed {
+            background: var(--success-color);
+            border-color: #26af5f;
+            box-shadow: 0 0 8px rgba(46, 213, 115, 0.4);
+        }
+
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        .timer-display {
+            font-size: 72px;
+            font-weight: 900;
+            color: var(--primary-color);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -2px;
+        }
+        
+        .timer-label {
+            font-size: 15px;
+            color: #0099ff;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--accent-color), #e65f2b);
+            color: white;
+            border: none;
+            padding: 18px 0;
+            width: 100%;
+            border-radius: 15px; 
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .action-button:disabled {
+            background: #e9ecef;
+            color: #adb5bd;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* כפתור אתגר חבר */
+        .share-button {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 2px dashed #86efac;
+            padding: 14px;
+            width: 100%;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .share-button:active {
+            transform: scale(0.98);
+        }
+
+        /* חלון חגיגה */
+        .celebration-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: white;
+            padding: 25px 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            z-index: 10001;
+            display: none;
+            width: 88%;
+            max-width: 340px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .celebration-message.show {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .celebration-title {
+            font-size: 30px;
+            font-weight: 900;
+            color: var(--success-color);
+            margin-bottom: 8px;
+        }
+
+        .celebration-text {
+            font-size: 16px;
+            color: var(--text-color);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .celebration-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 800;
+            border-radius: 25px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .dev-controls {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            background: #e2e8f0;
+            padding: 10px 20px;
+            border-top: 2px solid #cbd5e1;
+            align-items: center;
+        }
+
+        .dev-btn {
+            background: #475569;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .dev-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- קונפטי -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <!-- הודעת חגיגה בסיום סבב -->
+    <div class="celebration-message" id="celebrationBox">
+        <div class="celebration-title">🎉 כל הכבוד!</div>
+        <div class="celebration-text" id="celebrationText">עמדת באתגר בהצלחה רבה! ניצלת את הזמן בצורה נפלאה.</div>
+        <button class="celebration-btn" onclick="closeCelebration()">המשך</button>
+    </div>
+
+    <!-- מסך הפתיחה -->
+    <div id="splashScreen">
+        <div class="splash-logo-container">
+            <img src="https://drive.google.com/thumbnail?id=1oJ6C_MQWPxYWUT93xOSo3_Hx9vFj5tJ-&sz=w1000" alt="אתגר 3" class="splash-logo">
+        </div>
+        
+        <div class="organization-tag">מטעם 'מחברים לתורה' | בראשות הרב שמידט שליט"א</div>
+
+        <div class="splash-content">
+            <p class="splash-description">מתחברים לעצמנו ומרוויחים את הזמן</p>
+            <p class="splash-explanation">אתגר יומי מדורג בן 5 ימים שנותן לכם את הכוח לשלוט בזמן שלכם בחופש.</p>
+            
+            <div class="splash-prep-box">
+                <div class="splash-prep-title">💡 הטיפ החשוב לאתגר:</div>
+                <div class="splash-prep-text">לפני שאתם מתחילים את הניתוק, **הכינו מראש** קורס, ספר, עיסוק מעניין או לימוד לזמן שתרויחו!</div>
+            </div>
+        </div>
+        <button class="splash-btn" onclick="closeSplash()">קדימה לאתגר ◀</button>
+    </div>
+
+    <!-- גוף האפליקציה הראשי -->
+    <div class="app-wrapper">
+        <div class="phone-container">
+            <div class="header">
+                <div class="logo-image-container">
+                    <img src="https://drive.google.com/thumbnail?id=1oJ6C_MQWPxYWUT93xOSo3_Hx9vFj5tJ-&sz=w1000" alt="אתגר 3" class="logo-img">
+                </div>
+                <div class="app-subtitle">לוקחים אחריות על הזמן בחופש הגדול</div>
+            </div>
+
+            <div class="content">
+                <div class="status-card">
+                    <div class="day-title" id="dayDisplay">יום 1: התחלה קלה</div>
+                    <div class="requirement-text" id="reqDisplay">3 שניות כפול 3 פעמים היום</div>
+                    
+                    <div class="rounds-indicator" id="roundsIndicator">
+                        <div class="round-dot"></div>
+                        <div class="round-dot"></div>
+                        <div class="round-dot"></div>
+                    </div>
+
+                    <div class="time-setter-container">
+                        <div class="time-setter-main-title">כאן קובעים את הזמן לאתגר</div>
+                        <div class="rounds-inputs-wrapper" id="roundsInputsWrapper">
+                            <!-- יוזן דינמית -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timer-container">
+                    <div class="timer-display" id="timerDisplay">00:03</div>
+                    <div class="timer-label">זמן חיבור עצמי</div>
+                </div>
+
+                <button class="action-button" id="actionBtn" onclick="startChallenge()">ממתין לזמנים שנקבעו...</button>
+
+                <!-- כפתור אתגר חבר -->
+                <button class="share-button" onclick="shareWithFriend()">
+                    <span>🚀</span> אתגר חבר! שלח לו קישור
+                </button>
+            </div>
+
+            <!-- סרגל חיצי ניווט מהיר - לפיתוח בלבד -->
+            <div class="dev-controls">
+                <button class="dev-btn" onclick="devPrev()">◀ קודם</button>
+                <span class="dev-title">שלב בדיקה</span>
+                <button class="dev-btn" onclick="devNext()">הבא ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function closeSplash() {
+            const splash = document.getElementById('splashScreen');
+            splash.style.opacity = 0;
+            setTimeout(() => {
+                splash.style.visibility = 'hidden';
+            }, 500);
+        }
+
+        const challengeSteps = [
+            { day: 1, time: 3, totalRounds: 3, label: "3 שניות", req: "3 שניות כפול 3 פעמים היום" },
+            { day: 2, time: 180, totalRounds: 3, label: "3 דקות", req: "3 דקות כפול 3 פעמים היום" },
+            { day: 3, time: 1800, totalRounds: 1, label: "30 דקות", req: "30 דקות פעם אחת" },
+            { day: 4, time: 1800, totalRounds: 1, label: "30 דקות", req: "עוד 30 דקות פעם אחת" },
+            { day: 5, time: 10800, totalRounds: 1, label: "3 שעות", req: "3 שעות! הניתוק המלא" }
+        ];
+
+        let currentDayIndex = parseInt(localStorage.getItem('atgar3_currentDay')) || 0;
+        let currentRound = parseInt(localStorage.getItem('atgar3_currentRound')) || 0;
+        let lastCompletionDate = localStorage.getItem('atgar3_lastCompletionDate') || '';
+        
+        let timerInterval = null;
+        let clockCheckInterval = null;
+        let isRunning = false;
+
+        const timerDisplay = document.getElementById('timerDisplay');
+        const actionBtn = document.getElementById('actionBtn');
+        const roundsIndicator = document.getElementById('roundsIndicator');
+        const roundsInputsWrapper = document.getElementById('roundsInputsWrapper');
+
+        function beep() {
+            try {
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = context.createOscillator();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(587.33, context.currentTime);
+                oscillator.connect(context.destination);
+                oscillator.start();
+                oscillator.stop(context.currentTime + 0.4);
+            } catch(e){}
+        }
+
+        function triggerConfetti() {
+            const container = document.getElementById('confettiContainer');
+            container.innerHTML = '';
+            container.style.display = 'block';
+
+            const colors = ['#ff6b35', '#2ed573', '#0099ff', '#ff9f43', '#a55eea'];
+
+            for (let i = 0; i < 80; i++) {
+                const piece = document.createElement('div');
+                piece.classList.add('confetti-piece');
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                piece.style.animationDelay = (Math.random() * 0.5) + 's';
+                container.appendChild(piece);
+            }
+
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 4000);
+        }
+
+        function showCelebration(isDayFinished) {
+            triggerConfetti();
+            beep();
+            const box = document.getElementById('celebrationBox');
+            const text = document.getElementById('celebrationText');
+            
+            if(isDayFinished) {
+                text.innerText = "כל הכבוד! סיימת את כל האתגרים להיום בהצלחה נפלאה!";
+            } else {
+                text.innerText = "כל הכבוד! עמדת ביעד בהצלחה. המשך כך למשימה הבאה!";
+            }
+
+            box.classList.add('show');
+        }
+
+        function closeCelebration() {
+            document.getElementById('celebrationBox').classList.remove('show');
+        }
+
+        /* פונקציית שיתוף בטוחה */
+        function shareWithFriend() {
+            const shareUrl = window.location.protocol.startsWith('http') ? window.location.href : 'https://example.com/atgar3';
+            const textToCopy = `אני משתתף באתגר 3 ומרוויח את הזמן בחופש! מציע גם לך להצטרף: ${shareUrl}`;
+
+            if (window.location.protocol.startsWith('http') && navigator.share) {
+                navigator.share({
+                    title: 'אתגר 3 | לוקחים אחריות בחופש',
+                    text: 'אני משתתף באתגר 3 ומרוויח את הזמן בחופש!',
+                    url: shareUrl
+                }).catch(() => {});
+            } else {
+                const tempInput = document.createElement('textarea');
+                tempInput.value = textToCopy;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                try {
+                    document.execCommand('copy');
+                    alert('הקישור וההודעה להזמנת חבר הועתקו ללוח בהצלחה!');
+                } catch (err) {
+                    alert('לא ניתן להעתיק אוטומטית. העתק את הקישור מכתובת בדפדפן.');
+                }
+                document.body.removeChild(tempInput);
+            }
+        }
+
+        function getTodayDateString() {
+            const today = new Date();
+            return `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+        }
+
+        function updateUIDay() {
+            const step = challengeSteps[currentDayIndex];
+            document.getElementById('dayDisplay').innerText = `יום ${step.day}: ${step.label}`;
+            document.getElementById('reqDisplay').innerText = step.req;
+            
+            roundsIndicator.innerHTML = '';
+            if (step.totalRounds > 1) {
+                roundsIndicator.style.display = 'flex';
+                for (let i = 0; i < step.totalRounds; i++) {
+                    const dot = document.createElement('div');
+                    dot.classList.add('round-dot');
+                    if (i < currentRound) dot.classList.add('completed');
+                    roundsIndicator.appendChild(dot);
+                }
+            } else {
+                roundsIndicator.style.display = 'none';
+            }
+            
+            roundsInputsWrapper.innerHTML = '';
+            for (let r = 0; r < step.totalRounds; r++) {
+                const row = document.createElement('div');
+                row.classList.add('round-input-row');
+                
+                const label = document.createElement('span');
+                label.classList.add('round-input-label');
+                label.innerText = step.totalRounds > 1 ? `פעם ${r + 1}:` : `זמן האתגר:`;
+                
+                const input = document.createElement('input');
+                input.type = 'time';
+                input.classList.add('time-input');
+                input.id = `time_input_day_${currentDayIndex}_round_${r}`;
+                
+                const savedTime = localStorage.getItem(`atgar3_time_day_${currentDayIndex}_round_${r}`);
+                if (savedTime) input.value = savedTime;
+                
+                input.onchange = () => {
+                    if (input.value) {
+                        localStorage.setItem(`atgar3_time_day_${currentDayIndex}_round_${r}`, input.value);
+                        updateUIDay();
+                    }
+                };
+
+                const status = document.createElement('span');
+                status.classList.add('round-input-status');
+                if (r < currentRound) {
+                    status.innerText = "✓ הושלם";
+                    status.classList.add('completed'); 
+                    input.disabled = true;
+                } else if (r === currentRound) {
+                    status.innerText = "● הבא בתור";
+                    status.classList.add('active');
+                } else {
+                    status.innerText = "○ בהמתנה";
+                }
+
+                if (lastCompletionDate === getTodayDateString()) {
+                    input.disabled = true;
+                }
+
+                row.appendChild(label);
+                row.appendChild(input);
+                row.appendChild(status);
+                roundsInputsWrapper.appendChild(row);
+            }
+
+            if (lastCompletionDate === getTodayDateString()) {
+                actionBtn.disabled = true;
+                actionBtn.innerText = "האתגר היומי הושלם! נתראה מחר";
+            } else {
+                if (!isRunning) {
+                    const nextTargetTime = localStorage.getItem(`atgar3_time_day_${currentDayIndex}_round_${currentRound}`);
+                    if (nextTargetTime) {
+                        actionBtn.disabled = true;
+                        actionBtn.innerText = `ממתין אוטומטית לשעה ${nextTargetTime}...`;
+                    } else {
+                        actionBtn.disabled = true;
+                        actionBtn.innerText = step.totalRounds > 1 ? `קבע שעה לפעם ה-${currentRound + 1}` : "קבע שעה כדי להתחיל";
+                    }
+                }
+            }
+
+            updateTimerDisplay(step.time);
+        }
+
+        function startClockChecker() {
+            if(clockCheckInterval) clearInterval(clockCheckInterval);
+            
+            clockCheckInterval = setInterval(() => {
+                if (isRunning || lastCompletionDate === getTodayDateString()) return;
+                
+                const currentTargetTime = localStorage.getItem(`atgar3_time_day_${currentDayIndex}_round_${currentRound}`);
+                if (!currentTargetTime) return;
+
+                const now = new Date();
+                const currentHours = now.getHours().toString().padStart(2, '0');
+                const currentMinutes = now.getMinutes().toString().padStart(2, '0');
+                const currentTimeString = `${currentHours}:${currentMinutes}`;
+
+                if (currentTimeString === currentTargetTime) {
+                    startChallenge();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            timerDisplay.innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function startChallenge() {
+            if (isRunning) return;
+
+            const step = challengeSteps[currentDayIndex];
+            let timeLeft = step.time;
+
+            isRunning = true;
+            actionBtn.disabled = true;
+            actionBtn.innerText = "זמן חיבור עצמי החל! הטיימר רץ...";
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay(timeLeft);
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    handleRoundCompletion();
+                }
+            }, 1000);
+        }
+
+        function handleRoundCompletion() {
+            const step = challengeSteps[currentDayIndex];
+            currentRound++;
+            
+            let isFinishedForToday = false;
+
+            if (currentRound >= step.totalRounds) {
+                lastCompletionDate = getTodayDateString();
+                localStorage.setItem('atgar3_lastCompletionDate', lastCompletionDate);
+                actionBtn.disabled = true;
+                actionBtn.innerText = "השלמת הכל להיום! השלב הבא ייפתח מחר";
+                isFinishedForToday = true;
+            } else {
+                localStorage.setItem('atgar3_currentRound', currentRound);
+                actionBtn.disabled = true;
+                actionBtn.innerText = `פעם ${currentRound} הצליחה! ממתין לשעה הבאה...`;
+            }
+
+            showCelebration(isFinishedForToday);
+            saveState();
+            updateUIDay();
+        }
+
+        function saveState() {
+            localStorage.setItem('atgar3_currentDay', currentDayIndex);
+            localStorage.setItem('atgar3_currentRound', currentRound);
+        }
+
+        function devNext() {
+            const step = challengeSteps[currentDayIndex];
+            if (currentRound < step.totalRounds - 1) {
+                currentRound++;
+            } else {
+                currentRound = 0;
+                currentDayIndex = (currentDayIndex + 1) % challengeSteps.length;
+                lastCompletionDate = ''; 
+                localStorage.removeItem('atgar3_lastCompletionDate');
+            }
+            if(isRunning) { clearInterval(timerInterval); isRunning = false; }
+            saveState();
+            updateUIDay();
+        }
+
+        function devPrev() {
+            if (currentRound > 0) {
+                currentRound--;
+            } else {
+                currentDayIndex = currentDayIndex === 0 ? challengeSteps.length - 1 : currentDayIndex - 1;
+                currentRound = challengeSteps[currentDayIndex].totalRounds - 1;
+                lastCompletionDate = '';
+                localStorage.removeItem('atgar3_lastCompletionDate');
+            }
+            if(isRunning) { clearInterval(timerInterval); isRunning = false; }
+            saveState();
+            updateUIDay();
+        }
+
+        updateUIDay();
+        startClockChecker();
+    </script>
+</body>
+</html>
