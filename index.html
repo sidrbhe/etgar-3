@@ -409,7 +409,6 @@
             cursor: not-allowed;
         }
 
-        /* כפתור אתגר חבר */
         .share-button {
             background: #f0fdf4;
             color: #16a34a;
@@ -427,8 +426,12 @@
             transition: all 0.2s ease;
         }
 
-        .share-button:active {
-            transform: scale(0.98);
+        .reset-link {
+            font-size: 12px;
+            color: #94a3b8;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 5px;
         }
 
         /* חלון חגיגה */
@@ -485,17 +488,14 @@
 </head>
 <body>
 
-    <!-- קונפטי -->
     <div class="confetti-container" id="confettiContainer"></div>
 
-    <!-- הודעת חגיגה בסיום סבב -->
     <div class="celebration-message" id="celebrationBox">
         <div class="celebration-title">🎉 כל הכבוד!</div>
         <div class="celebration-text" id="celebrationText">עמדת באתגר בהצלחה רבה! ניצלת את הזמן בצורה נפלאה.</div>
         <button class="celebration-btn" onclick="closeCelebration()">המשך</button>
     </div>
 
-    <!-- מסך הפתיחה -->
     <div id="splashScreen">
         <div class="splash-logo-container">
             <img src="https://drive.google.com/thumbnail?id=1oJ6C_MQWPxYWUT93xOSo3_Hx9vFj5tJ-&sz=w1000" alt="אתגר 3" class="splash-logo">
@@ -515,14 +515,12 @@
         <button class="splash-btn" onclick="closeSplash()">קדימה לאתגר ◀</button>
     </div>
 
-    <!-- גוף האפליקציה הראשי -->
     <div class="app-wrapper">
         <div class="phone-container">
             <div class="header">
                 <div class="logo-image-container">
                     <img src="https://drive.google.com/thumbnail?id=1oJ6C_MQWPxYWUT93xOSo3_Hx9vFj5tJ-&sz=w1000" alt="אתגר 3" class="logo-img">
                 </div>
-                <!-- הקרדיט הקבוע של הארגון שמופיע בכל העמודים -->
                 <div class="organization-tag">מטעם 'מחברים לתורה' | בראשות הרב שמידט שליט"א</div>
                 <div class="app-subtitle">לוקחים אחריות על הזמן בחופש הגדול</div>
             </div>
@@ -540,9 +538,7 @@
 
                     <div class="time-setter-container">
                         <div class="time-setter-main-title">כאן קובעים את הזמן לאתגר</div>
-                        <div class="rounds-inputs-wrapper" id="roundsInputsWrapper">
-                            <!-- יוזן דינמית -->
-                        </div>
+                        <div class="rounds-inputs-wrapper" id="roundsInputsWrapper"></div>
                     </div>
                 </div>
 
@@ -553,10 +549,12 @@
 
                 <button class="action-button" id="actionBtn" onclick="startChallenge()">ממתין לזמנים שנקבעו...</button>
 
-                <!-- כפתור אתגר חבר -->
                 <button class="share-button" onclick="shareWithFriend()">
                     <span>🚀</span> אתגר חבר! שלח לו קישור
                 </button>
+
+                <!-- כפתור איפוס בדיקה (שימושי עבורך בעת הפיתוח) -->
+                <div class="reset-link" onclick="resetMyProgress()">איפוס התקדמות (לבדיקה בלבד)</div>
             </div>
         </div>
     </div>
@@ -586,30 +584,37 @@
         let clockCheckInterval = null;
         let isRunning = false;
 
+        function getTodayDateString() {
+            const today = new Date();
+            return `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+        }
+
+        /* מנגנון התקדמות אוטומטית מיום ליום */
+        function checkAutoAdvanceDay() {
+            if (lastCompletionDate && lastCompletionDate !== getTodayDateString()) {
+                if (currentDayIndex < challengeSteps.length - 1) {
+                    currentDayIndex++;
+                    currentRound = 0;
+                    lastCompletionDate = '';
+                    localStorage.setItem('atgar3_currentDay', currentDayIndex);
+                    localStorage.setItem('atgar3_currentRound', 0);
+                    localStorage.removeItem('atgar3_lastCompletionDate');
+                }
+            }
+        }
+
+        checkAutoAdvanceDay();
+
         const timerDisplay = document.getElementById('timerDisplay');
         const actionBtn = document.getElementById('actionBtn');
         const roundsIndicator = document.getElementById('roundsIndicator');
         const roundsInputsWrapper = document.getElementById('roundsInputsWrapper');
 
-        function beep() {
-            try {
-                const context = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = context.createOscillator();
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(587.33, context.currentTime);
-                oscillator.connect(context.destination);
-                oscillator.start();
-                oscillator.stop(context.currentTime + 0.4);
-            } catch(e){}
-        }
-
         function triggerConfetti() {
             const container = document.getElementById('confettiContainer');
             container.innerHTML = '';
             container.style.display = 'block';
-
             const colors = ['#ff6b35', '#2ed573', '#0099ff', '#ff9f43', '#a55eea'];
-
             for (let i = 0; i < 80; i++) {
                 const piece = document.createElement('div');
                 piece.classList.add('confetti-piece');
@@ -619,24 +624,18 @@
                 piece.style.animationDelay = (Math.random() * 0.5) + 's';
                 container.appendChild(piece);
             }
-
-            setTimeout(() => {
-                container.style.display = 'none';
-            }, 4000);
+            setTimeout(() => { container.style.display = 'none'; }, 4000);
         }
 
         function showCelebration(isDayFinished) {
             triggerConfetti();
-            beep();
             const box = document.getElementById('celebrationBox');
             const text = document.getElementById('celebrationText');
-            
             if(isDayFinished) {
-                text.innerText = "כל הכבוד! סיימת את כל האתגרים להיום בהצלחה נפלאה!";
+                text.innerText = "כל הכבוד! סיימת את כל האתגרים להיום בהצלחה נפלאה! האתגר של מחר ייפתח בחצות.";
             } else {
                 text.innerText = "כל הכבוד! עמדת ביעד בהצלחה. המשך כך למשימה הבאה!";
             }
-
             box.classList.add('show');
         }
 
@@ -644,7 +643,6 @@
             document.getElementById('celebrationBox').classList.remove('show');
         }
 
-        /* פונקציית שיתוף בטוחה המשתמשת בכתובת האתר האמיתית ב-GitHub */
         function shareWithFriend() {
             const shareUrl = window.location.protocol.startsWith('http') ? window.location.href : 'https://sidrbhe.github.io/-3/';
             const textToCopy = `אני משתתף באתגר 3 ומרוויח את הזמן בחופש! מציע גם לך להצטרף: ${shareUrl}`;
@@ -668,11 +666,6 @@
                 }
                 document.body.removeChild(tempInput);
             }
-        }
-
-        function getTodayDateString() {
-            const today = new Date();
-            return `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
         }
 
         function updateUIDay() {
@@ -705,7 +698,6 @@
                 const input = document.createElement('input');
                 input.type = 'time';
                 input.classList.add('time-input');
-                input.id = `time_input_day_${currentDayIndex}_round_${r}`;
                 
                 const savedTime = localStorage.getItem(`atgar3_time_day_${currentDayIndex}_round_${r}`);
                 if (savedTime) input.value = savedTime;
@@ -742,7 +734,7 @@
 
             if (lastCompletionDate === getTodayDateString()) {
                 actionBtn.disabled = true;
-                actionBtn.innerText = "האתגר היומי הושלם! נתראה מחר";
+                actionBtn.innerText = "האתגר היומי הושלם! האתגר הבא יפתח מחר";
             } else {
                 if (!isRunning) {
                     const nextTargetTime = localStorage.getItem(`atgar3_time_day_${currentDayIndex}_round_${currentRound}`);
@@ -834,6 +826,14 @@
         function saveState() {
             localStorage.setItem('atgar3_currentDay', currentDayIndex);
             localStorage.setItem('atgar3_currentRound', currentRound);
+        }
+
+        /* פונקציית איפוס לצורך בדיקות */
+        function resetMyProgress() {
+            if(confirm("תרצה לאפס את ההתקדמות שלך ולהתחיל מיום 1?")) {
+                localStorage.clear();
+                location.reload();
+            }
         }
 
         updateUIDay();
